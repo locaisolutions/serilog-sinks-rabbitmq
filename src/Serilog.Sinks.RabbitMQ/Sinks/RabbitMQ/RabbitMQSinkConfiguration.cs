@@ -14,7 +14,7 @@
 
 using Serilog.Events;
 using Serilog.Formatting;
-using Serilog.Formatting.Raw;
+using Serilog.Formatting.Json;
 using System;
 
 
@@ -27,7 +27,7 @@ namespace Serilog.Sinks.RabbitMQ.Sinks.RabbitMQ
     {
         public int BatchPostingLimit { get; set; }
         public TimeSpan Period { get; set; }
-        public ITextFormatter TextFormatter { get; set; } = new RawFormatter();
+        public ITextFormatter TextFormatter { get; set; } = new JsonFormatter();
         public LogEventLevel RestrictedToMinimumLevel { get; set; } = LogEventLevel.Verbose;
     }
 }
