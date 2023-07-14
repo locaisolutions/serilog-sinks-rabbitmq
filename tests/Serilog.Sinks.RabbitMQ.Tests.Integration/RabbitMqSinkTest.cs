@@ -18,7 +18,7 @@ namespace Serilog.Sinks.RabbitMQ.Tests.Integration
     public sealed class RabbitMqSinkTest : IDisposable
     {
         private const string QueueName = "serilog-sink-queue";
-        private const string HostName = "rabbitmq";
+        private const string HostName = "localhost";
 
         private readonly Logger logger = new LoggerConfiguration()
             .WriteTo.RabbitMQ((clientConfiguration, sinkConfiguration) =>
@@ -91,6 +91,11 @@ namespace Serilog.Sinks.RabbitMQ.Tests.Integration
                     {
                         this.connection = factory.CreateConnection();
                         this.channel = this.connection.CreateModel();
+
+                        this.channel.ExchangeDeclare("serilog-sink-exchange", "fanout");
+                        this.channel.QueueDeclare("serilog-sink-queue");
+                        this.channel.QueueBind("serilog-sink-queue", "serilog-sink-exchange", "💯");
+
                         break;
                     }
                     catch (BrokerUnreachableException)

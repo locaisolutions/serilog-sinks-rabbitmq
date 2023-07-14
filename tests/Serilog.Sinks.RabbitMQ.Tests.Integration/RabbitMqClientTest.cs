@@ -16,7 +16,7 @@ namespace Serilog.Sinks.RabbitMQ.Tests.Integration
     public sealed class RabbitMqClientTest : IDisposable
     {
         private const string QueueName = "serilog-sink-queue";
-        private const string HostName = "rabbitmq";
+        private const string HostName = "localhost";
 
         private readonly RabbitMQClient client = new RabbitMQClient(new RabbitMQClientConfiguration
         {
@@ -55,7 +55,7 @@ namespace Serilog.Sinks.RabbitMQ.Tests.Integration
                     await Task.Delay(50);
                 });
 
-            var receivedMessage = Encoding.UTF8.GetString(eventRaised.Arguments.ToArray());
+            var receivedMessage = Encoding.UTF8.GetString(eventRaised.Arguments.Body.ToArray());
             Assert.Equal(message, receivedMessage);
         }
 
@@ -80,6 +80,11 @@ namespace Serilog.Sinks.RabbitMQ.Tests.Integration
                     {
                         this.connection = factory.CreateConnection();
                         this.channel = this.connection.CreateModel();
+
+                        this.channel.ExchangeDeclare("serilog-sink-exchange", "fanout");
+                        this.channel.QueueDeclare("serilog-sink-queue");
+                        this.channel.QueueBind("serilog-sink-queue", "serilog-sink-exchange", "🚀");
+
                         break;
                     }
                     catch (BrokerUnreachableException)
